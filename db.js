@@ -1,0 +1,29 @@
+// db.js
+const { Sequelize } = require('sequelize');
+const path = require('path');
+
+const sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: path.join(__dirname, 'database.sqlite'), 
+    logging: false, 
+});
+
+const connectDB = async () => {
+    try {
+        await sequelize.authenticate();
+        console.log('✅ Đã kết nối SQLite thành công!');
+        
+        // Đã kiểm tra lỗi Case-Sensitivity: sử dụng './models/'
+        require('./models/User'); 
+        require('./models/Result'); 
+
+        await sequelize.sync({ alter: true }); 
+        console.log('✅ Đã đồng bộ hóa các bảng (Tables) thành công!');
+
+    } catch (error) {
+        console.error(`Lỗi kết nối SQLite: ${error.message}`);
+        process.exit(1);
+    }
+};
+
+module.exports = { sequelize, connectDB };
